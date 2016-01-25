@@ -36,27 +36,66 @@ struct sim_result
 
 
 sim_result sim(unsigned int type,unsigned int probs[4][2]);
+int simulation(int argc, char* argv[]);
 void printNEA(char* arg0);
 bool isNumber(string s);
 int toInt(string s);
 void splitString(string s, char delim,string* retString);
 void print_result(sim_result r);
 
-int main(int argc,char* argv[])
+int main(int argc, char* argv[])
 {
 	srand(time(NULL));
+	string ims = "";
+	
 	if(argc < 3 || !(strcmp(argv[1], "SSP") || argc >= 6))
 	{
 		printNEA(argv[0]);
-		return -1;
+		cout << "Interactive mode? (yes, no): ";
+		cin >> ims;
+		if(ims == "" || ims == "y" || ims == "Y" || ims == "yes" || ims == "Yes")
+		{
+			string argi[8];
+			
+			cout << "Spiel (UBR, ZFM, HFS, SSP): ";
+			cin >> argi[1];
+			cout << "Wahrscheinlichkeit A [n/m]: ";
+			cin >> argi[2];
+			cout << "Wahrscheinlichkeit B [n/m]: ";
+			cin >> argi[3];
+			cout << "Wahrscheinlichkeit A_2 [n/m]: ";
+			cin >> argi[4];
+			cout << "Wahrscheinlichkeit B_2 [n/m]: ";
+			cin >> argi[5];
+			cout << "Delay [x]: ";
+			cin >> argi[6]; if(argi[6] == "") argi[6] = "1000";
+			cout << "Fast run (true,false): ";
+			cin >> argi[7];
+			char* argi_c[8];
+			for(int i = 0; i < 8; i++)
+			{
+				argi_c[i] = (char*)argi[i].c_str();
+			}
+			return simulation(8,argi_c);
+		}
+		else
+		{
+			return -1;
+		}
 	}
 	else
 	{
-		unsigned int delay;
+		return simulation(argc,argv);
+	}
+}
+
+int simulation(int argc, char* argv[])
+{
+	unsigned int delay;
 		if(argc == 7) delay = toInt(argv[6]);
 		else delay = 1000;
 		bool quick_update = false;
-		if(argc == 8 && !strcmp(argv[7],"true")) quick_update = true;
+		if(argc == 8 && !strcmp(argv[7],"false")) quick_update = true;
 		
 		unsigned int probs[4][2];
 		for( int i = 2; i < 6;i++)
@@ -138,8 +177,7 @@ int main(int argc,char* argv[])
 			round++;
 			for(unsigned int i = 0; i < delay; i++);
 		}
-	}
-	return 0;
+		return 0;
 }
 
 sim_result sim(unsigned int type,unsigned int probs[4][2])
